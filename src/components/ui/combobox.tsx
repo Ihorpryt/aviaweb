@@ -12,6 +12,7 @@ export function Combobox({
   value,
   onValueChange,
   options,
+  groups,
   placeholder,
   searchPlaceholder,
   emptyText,
@@ -22,14 +23,17 @@ export function Combobox({
   onOpenChange: (open: boolean) => void
   value: string
   onValueChange: (value: string) => void
-  options: Array<{ value: string; label: string }>
+  options?: Array<{ value: string; label: string }>
+  groups?: Array<{ label: string; options: Array<{ value: string; label: string }> }>
   placeholder: string
   searchPlaceholder: string
   emptyText: string
   triggerClassName: string
 }) {
+  const resolvedOptions =
+    groups?.flatMap((group) => group.options) ?? options ?? []
   const selectedLabel = value
-    ? options.find((option) => option.value === value)?.label
+    ? resolvedOptions.find((option) => option.value === value)?.label
     : undefined
 
   return (
@@ -41,7 +45,7 @@ export function Combobox({
           aria-expanded={open}
           className={cn(triggerClassName, "justify-between font-normal")}
         >
-          <span className={cn(!selectedLabel && "text-muted-foreground")}>
+          <span className={cn(!selectedLabel && "text-muted-foreground", "truncate")}>
             {selectedLabel ?? placeholder}
           </span>
           {/* <ChevronsUpDown className="opacity-50" /> */}
@@ -53,26 +57,51 @@ export function Combobox({
           <CommandInput placeholder={searchPlaceholder} className="h-9" />
           <CommandList>
             <CommandEmpty>{emptyText}</CommandEmpty>
-            <CommandGroup>
-              {options.map((option) => (
-                <CommandItem
-                  key={option.value}
-                  value={option.value}
-                  onSelect={(currentValue) => {
-                    onValueChange(currentValue === value ? "" : currentValue)
-                    onOpenChange(false)
-                  }}
-                >
-                  {option.label}
-                  <Check
-                    className={cn(
-                      "ml-auto",
-                      value === option.value ? "opacity-100" : "opacity-0"
-                    )}
-                  />
-                </CommandItem>
-              ))}
-            </CommandGroup>
+            {groups ? (
+              groups.map((group) => (
+                <CommandGroup key={group.label} heading={group.label}>
+                  {group.options.map((option) => (
+                    <CommandItem
+                      key={option.value}
+                      value={option.value}
+                      onSelect={(currentValue) => {
+                        onValueChange(currentValue === value ? "" : currentValue)
+                        onOpenChange(false)
+                      }}
+                    >
+                      {option.label}
+                      <Check
+                        className={cn(
+                          "ml-auto text-primary",
+                          value === option.value ? "opacity-100" : "opacity-0"
+                        )}
+                      />
+                    </CommandItem>
+                  ))}
+                </CommandGroup>
+              ))
+            ) : (
+              <CommandGroup>
+                {(options ?? []).map((option) => (
+                  <CommandItem
+                    key={option.value}
+                    value={option.value}
+                    onSelect={(currentValue) => {
+                      onValueChange(currentValue === value ? "" : currentValue)
+                      onOpenChange(false)
+                    }}
+                  >
+                    {option.label}
+                    <Check
+                      className={cn(
+                        "ml-auto text-primary",
+                        value === option.value ? "opacity-100" : "opacity-0"
+                      )}
+                    />
+                  </CommandItem>
+                ))}
+              </CommandGroup>
+            )}
           </CommandList>
         </Command>
       </PopoverContent>

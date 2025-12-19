@@ -29,6 +29,11 @@ import {
   NavigationMenuList,
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
 
 
 const links = [
@@ -104,31 +109,60 @@ export function Nav() {
           </Link>
         </Button>
 
-        <Button asChild size="icon-sm" variant="ghost">
-          <Link to="#">
-            <Icon name="recent" className="text-icon size-5" />
-          </Link>
-        </Button>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button asChild size="icon-sm" variant="ghost">
+              <Link to="#">
+                <Icon name="recent" className="text-icon size-5" />
+              </Link>
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent side="bottom" sideOffset={0}>
+            Recent/Following
+          </TooltipContent>
+        </Tooltip>
 
-        <Button asChild size="icon-sm" variant="ghost">
-          <Link to="#">
-            <Icon name="help" className="text-icon size-5" />
-          </Link>
-        </Button>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button asChild size="icon-sm" variant="ghost">
+              <Link to="#">
+                <Icon name="help" className="text-icon size-5" />
+              </Link>
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent side="bottom" sideOffset={0}>
+            Help
+          </TooltipContent>
+        </Tooltip>
 
-        <Button asChild size="icon-sm" variant="ghost">
-          <Link to="#">
-            <Icon name="maximize" className="text-icon size-5" />
-          </Link>
-        </Button>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button asChild size="icon-sm" variant="ghost">
+              <Link to="#">
+                <Icon name="maximize" className="text-icon size-5" />
+              </Link>
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent side="bottom" sideOffset={0}>
+            Full Screen
+          </TooltipContent>
+        </Tooltip>
 
-        <Button
-          size="icon-sm"
-          variant="ghost"
-          onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-        >
-          <Icon name="darkMode" className="text-icon size-5" />
-        </Button>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              size="icon-sm"
+              variant="ghost"
+              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+              className="cursor-pointer"
+            >
+              <Icon name="darkMode" className="text-icon size-5" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent side="bottom" sideOffset={0}>
+            Dark Mode
+          </TooltipContent>
+        </Tooltip>
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
