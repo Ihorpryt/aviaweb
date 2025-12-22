@@ -156,6 +156,10 @@ export default function CreateTripQuote() {
     const [contactValue, setContactValue] = useState("")
     const [tripTypeValue, setTripTypeValue] = useState("")
     const [contractValue, setContractValue] = useState("")
+    const [departArriveValue, setDepartArriveValue] = useState("depart")
+    const [tripModeValue, setTripModeValue] = useState("pax")
+    const [pricingModeValue, setPricingModeValue] = useState("retail")
+    const [timeValue, setTimeValue] = useState("10:30:00")
 
     const tripTypeOptions = [
         { value: "n/a", label: "N/A" },
@@ -186,6 +190,29 @@ export default function CreateTripQuote() {
         "quote-trip": "Create Quote & Trip Request",
     }
     const requestTitle = requestTitles[requestTab] ?? "Create Quote & Trip Request"
+
+    const handleReset = () => {
+        setFromOpen(false)
+        setToOpen(false)
+        setDatePickerOpen(false)
+        setDate(undefined)
+        setFromValue("")
+        setToValue("")
+        setAircraftOpen(false)
+        setAccountOpen(false)
+        setContactOpen(false)
+        setTripTypeOpen(false)
+        setContractOpen(false)
+        setAircraftValue("")
+        setAccountValue("")
+        setContactValue("")
+        setTripTypeValue("")
+        setContractValue("")
+        setDepartArriveValue("depart")
+        setTripModeValue("pax")
+        setPricingModeValue("retail")
+        setTimeValue("10:30:00")
+    }
 
     return (
         <div className="flex flex-col bg-background w-full">
@@ -272,7 +299,7 @@ export default function CreateTripQuote() {
                                         triggerClassName="w-[270px]"
                                     />
 
-                                    <Tabs defaultValue="retail">
+                                    <Tabs value={pricingModeValue} onValueChange={setPricingModeValue}>
                                         <TabsList>
                                             <TabsTrigger value="retail">Retail</TabsTrigger>
                                             <TabsTrigger value="wholesale">Wholesale</TabsTrigger>
@@ -404,7 +431,7 @@ export default function CreateTripQuote() {
                                     <Label htmlFor="depart">Depart / Arrive:</Label>
 
                                     <div className="flex flex-row gap-2">
-                                        <Select defaultValue="depart">
+                                        <Select value={departArriveValue} onValueChange={setDepartArriveValue}>
                                             <SelectTrigger className="w-[115px]" id="depart">
                                                 <SelectValue placeholder="Depart At" />
                                             </SelectTrigger>
@@ -445,11 +472,12 @@ export default function CreateTripQuote() {
                                             type="time"
                                             id="time-picker"
                                             step="1"
-                                            defaultValue="10:30:00"
+                                            value={timeValue}
+                                            onChange={(event) => setTimeValue(event.target.value)}
                                             className="w-fit bg-background appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none"
                                         />
 
-                                        <Tabs defaultValue="pax">
+                                        <Tabs value={tripModeValue} onValueChange={setTripModeValue}>
                                             <TabsList>
                                                 <TabsTrigger value="pax">PAX</TabsTrigger>
                                                 <TabsTrigger value="pos">POS</TabsTrigger>
@@ -459,13 +487,22 @@ export default function CreateTripQuote() {
                                 </div>
                             </div>
                             <div className="flex flex-col gap-1.5">
+                                {/* 
+                                    Aviation Shortcuts Mapping:
+                                    FLT: Flight Time (varianthours)
+                                    BLT: Block Time (legBlock)
+                                    TT:  Total Time (blockTotal)
+                                    DT:  Duty Time (dutyTotal)
+                                    RT:  Rest Time (restTotal)
+                                    DST: Distance (distanceTotal)
+                                */}
                                 <div className="flex flex-row items-center text-center h-[18px]">
-                                    <div className="w-[60px] text-[#6C757D]">FLT</div>
-                                    <div className="w-[60px] text-[#6C757D]">BLT</div>
-                                    <div className="w-[60px] text-[#6C757D]">TT</div>
-                                    <div className="w-[60px] text-[#6C757D]">DT</div>
-                                    <div className="w-[60px] text-[#6C757D]">RT</div>
-                                    <div className="w-[100px] text-[#6C757D]">DST</div>
+                                    <div className="w-[60px] text-[#6C757D]" title="Flight Time">FLT</div>
+                                    <div className="w-[60px] text-[#6C757D]" title="Block Time">BLT</div>
+                                    <div className="w-[60px] text-[#6C757D]" title="Total Time">TT</div>
+                                    <div className="w-[60px] text-[#6C757D]" title="Duty Time">DT</div>
+                                    <div className="w-[60px] text-[#6C757D]" title="Rest Time">RT</div>
+                                    <div className="w-[100px] text-[#6C757D]" title="Distance">DST</div>
                                 </div>
                                 <div className="flex flex-row items-center h-[32px]">
                                     <div className="flex flex-row items-center text-center border-x border-border divide-x divide-border h-[14px]">
@@ -516,8 +553,8 @@ export default function CreateTripQuote() {
                         <Button asChild size="default" className="min-w-[90px]">
                             <Link to="#">Create</Link>
                         </Button>
-                        <Button asChild size="default" variant="outline" className="min-w-[90px]">
-                            <Link to="#">Reset</Link>
+                        <Button size="default" variant="outline" className="min-w-[90px]" onClick={handleReset}>
+                            Reset
                         </Button>
                     </div>
                 </div>

@@ -26,6 +26,7 @@ import Recent from "./svgs/recent.svg?react"
 import Help from "./svgs/help.svg?react"
 import Maximize from "./svgs/maximize.svg?react"
 import DarkMode from "./svgs/dark-mode.svg?react"
+import SidebarIcon from "./svgs/sidebar.svg?react"
 
 export const icons = {
   add: Add,
@@ -55,6 +56,7 @@ export const icons = {
   help: Help,
   maximize: Maximize,
   darkMode: DarkMode,
+  sidebar: SidebarIcon,
 } as const
 
 export type IconName = keyof typeof icons

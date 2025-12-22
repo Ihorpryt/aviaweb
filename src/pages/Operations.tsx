@@ -12,6 +12,12 @@ import {
 } from "@/components/ui/table"
 import { cn } from "@/lib/utils"
 import { NavLink, Navigate, Route, Routes } from "react-router-dom"
+import { useState } from "react"
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipTrigger,
+} from "@/components/ui/tooltip"
 
 const operationTabs = [
     { label: "Ops Board", to: "/operations/ops-board" },
@@ -140,16 +146,23 @@ function PlaceholderSection({ title }: { title: string }) {
 }
 
 function FlightLegSearch() {
+    const [showFilters, setShowFilters] = useState(true)
+
     return (
         <div className="flex flex-1 min-h-0 flex-col">
             <div className="flex flex-1 min-h-0">
-                <aside className="hidden lg:flex w-56 border-r border-border bg-bg-3 px-4 py-4">
-                    <div className="flex flex-col gap-4 text-sm text-muted-foreground">
-                        <span className="uppercase text-[11px] tracking-[0.18em]">Filter</span>
-                        <Button variant="outline" size="sm" className="justify-start">
+                <aside
+                    className={cn(
+                        "hidden lg:flex flex-col border-r border-border bg-bg-3 transition-all duration-300 ease-in-out overflow-hidden",
+                        showFilters ? "w-56 opacity-100" : "w-0 opacity-0 border-r-0"
+                    )}
+                >
+                    <div className="w-56 flex flex-col gap-4 px-4 py-4 text-sm text-muted-foreground">
+                        <span className="uppercase text-[11px] tracking-[0.18em] whitespace-nowrap">Filter</span>
+                        <Button variant="outline" size="sm" className="justify-start whitespace-nowrap">
                             Add Filter
                         </Button>
-                        <div className="text-xs text-muted-foreground/70">
+                        <div className="text-xs text-muted-foreground/70 min-w-[192px]">
                             Filter by aircraft, status, crew, or date range.
                         </div>
                     </div>
@@ -157,7 +170,22 @@ function FlightLegSearch() {
                 <div className="flex flex-1 min-h-0 flex-col">
                     <div className="flex flex-row items-center justify-between gap-4 border-b border-border bg-background px-4 py-2">
                         <div className="flex items-center gap-2">
-                            <Button variant="outline" size="sm" className="bg-background/60">
+                            <Tooltip>
+                                <TooltipTrigger asChild>
+                                    <Button
+                                        variant="ghost"
+                                        size="icon-sm"
+                                        onClick={() => setShowFilters(!showFilters)}
+                                        className="cursor-pointer"
+                                    >
+                                        <Icon name="sidebar" className="text-icon size-5" />
+                                    </Button>
+                                </TooltipTrigger>
+                                <TooltipContent side="bottom" sideOffset={0}>
+                                    {showFilters ? "Hide Filters" : "Show Filters"}
+                                </TooltipContent>
+                            </Tooltip>
+                            <Button variant="outline" size="sm" className="bg-background/60 rounded-full">
                                 <Icon name="settings" className="text-icon size-4" />
                                 Columns
                             </Button>
@@ -171,7 +199,7 @@ function FlightLegSearch() {
                                 <Input className="h-7 pl-8 rounded-lg pb-[6px]" placeholder="Search" />
                             </div>
                             <Button size="sm">
-                                <Icon name="add" className="text-foreground size-4" />
+                                <Icon name="add" className="text-[#FFFFFF] size-4" />
                                 Create
                             </Button>
                         </div>
