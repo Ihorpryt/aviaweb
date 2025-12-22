@@ -26,6 +26,7 @@ import {
 import { Combobox } from "@/components/ui/combobox"
 import { Icon } from "@/components/ui/icons/Icon"
 import { ButtonGroup } from "@/components/ui/button-group"
+import { PageHeader } from "@/components/PageHeader"
 
 const airports = [
     {
@@ -156,11 +157,6 @@ export default function CreateTripQuote() {
     const [tripTypeValue, setTripTypeValue] = useState("")
     const [contractValue, setContractValue] = useState("")
 
-    const selectOptions = [
-        { value: "light", label: "Light" },
-        { value: "dark", label: "Dark" },
-        { value: "system", label: "System" },
-    ]
     const tripTypeOptions = [
         { value: "n/a", label: "N/A" },
         { value: "wholesale", label: "Wholesale" },
@@ -192,20 +188,9 @@ export default function CreateTripQuote() {
     const requestTitle = requestTitles[requestTab] ?? "Create Quote & Trip Request"
 
     return (
-        <div className="flex flex-col gap-4 p-4 bg-background w-full">
+        <div className="flex flex-col bg-background w-full">
 
-            <div className="flex flex-row items-center justify-between">
-                <div className="flex flex-row items-center gap-2">
-                    <Icon name="sales" className="text-icon size-6" />
-                    <h3 className="font-cal-sans text-xl">
-                        <span
-                            key={requestTab}
-                            className="inline-block animate-in fade-in slide-in-from-bottom-1 duration-300"
-                        >
-                            {requestTitle}
-                        </span>
-                    </h3>
-                </div>
+            <PageHeader icon="sales" title={requestTitle} animateKey={requestTab}>
                 <Tabs value={requestTab} onValueChange={setRequestTab}>
                     <TabsList>
                         <TabsTrigger value="quote-only">Quote Only</TabsTrigger>
@@ -213,299 +198,328 @@ export default function CreateTripQuote() {
                         <TabsTrigger value="quote-trip">Quote & Trip</TabsTrigger>
                     </TabsList>
                 </Tabs>
-            </div>
+            </PageHeader>
 
-            <div className="flex flex-col border-border border rounded-lg overflow-hidden">
-                <div className="flex flex-row border-border border-b p-4 gap-2 bg-bg-3 justify-between">
+            <div className="px-4 pb-4">
+                <div className="flex flex-col border-border border rounded-lg overflow-hidden">
+                    <div className="flex flex-row border-border border-b p-4 gap-2 bg-bg-3 justify-between">
 
-                    <div className="flex flex-row gap-2">
-                        <Combobox
-                            open={aircraftOpen}
-                            onOpenChange={setAircraftOpen}
-                            value={aircraftValue}
-                            onValueChange={setAircraftValue}
-                            groups={aircraftGroups}
-                            placeholder="Select Aircraft"
-                            searchPlaceholder="Search aircraft..."
-                            emptyText="No aircraft found."
-                            triggerClassName="w-[348px]"
-                        />
-
-                        <Combobox
-                            open={accountOpen}
-                            onOpenChange={setAccountOpen}
-                            value={accountValue}
-                            onValueChange={setAccountValue}
-                            options={accountOptions}
-                            placeholder="Select Account"
-                            searchPlaceholder="Search account..."
-                            emptyText="No account found."
-                            triggerClassName="w-[164px]"
-                        />
-
-                        <Combobox
-                            open={contactOpen}
-                            onOpenChange={setContactOpen}
-                            value={contactValue}
-                            onValueChange={setContactValue}
-                            options={contactOptions}
-                            placeholder="Select Contact"
-                            searchPlaceholder="Search contact..."
-                            emptyText="No contact found."
-                            triggerClassName="w-[164px]"
-                        />
-                    </div>
-
-                    <div className="flex flex-row gap-2">
-
-                        {requestTab !== "quote-only" && (
+                        <div className="flex flex-row gap-2">
                             <Combobox
-                                open={tripTypeOpen}
-                                onOpenChange={setTripTypeOpen}
-                                value={tripTypeValue}
-                                onValueChange={setTripTypeValue}
-                                options={tripTypeOptions}
-                                placeholder="Select Trip Type"
-                                searchPlaceholder="Search trip type..."
-                                emptyText="No trip type found."
-                                triggerClassName="w-[170px]"
+                                open={aircraftOpen}
+                                onOpenChange={setAircraftOpen}
+                                value={aircraftValue}
+                                onValueChange={setAircraftValue}
+                                groups={aircraftGroups}
+                                placeholder="Select Aircraft"
+                                searchPlaceholder="Search aircraft..."
+                                emptyText="No aircraft found."
+                                triggerClassName="w-[348px]"
                             />
-                        )}
 
-                        {requestTab !== "trip-only" && (
-                            <>
+                            <Combobox
+                                open={accountOpen}
+                                onOpenChange={setAccountOpen}
+                                value={accountValue}
+                                onValueChange={setAccountValue}
+                                options={accountOptions}
+                                placeholder="Select Account"
+                                searchPlaceholder="Search account..."
+                                emptyText="No account found."
+                                triggerClassName="w-[164px]"
+                            />
+
+                            <Combobox
+                                open={contactOpen}
+                                onOpenChange={setContactOpen}
+                                value={contactValue}
+                                onValueChange={setContactValue}
+                                options={contactOptions}
+                                placeholder="Select Contact"
+                                searchPlaceholder="Search contact..."
+                                emptyText="No contact found."
+                                triggerClassName="w-[164px]"
+                            />
+                        </div>
+
+                        <div className="flex flex-row gap-2">
+
+                            {requestTab !== "quote-only" && (
                                 <Combobox
-                                    open={contractOpen}
-                                    onOpenChange={setContractOpen}
-                                    value={contractValue}
-                                    onValueChange={setContractValue}
-                                    options={contractOptions}
-                                    placeholder="Select Contract"
-                                    searchPlaceholder="Search contract..."
-                                    emptyText="No contract found."
-                                    triggerClassName="w-[270px]"
+                                    open={tripTypeOpen}
+                                    onOpenChange={setTripTypeOpen}
+                                    value={tripTypeValue}
+                                    onValueChange={setTripTypeValue}
+                                    options={tripTypeOptions}
+                                    placeholder="Select Trip Type"
+                                    searchPlaceholder="Search trip type..."
+                                    emptyText="No trip type found."
+                                    triggerClassName="w-[170px]"
                                 />
+                            )}
 
-                                <Tabs defaultValue="retail">
-                                    <TabsList>
-                                        <TabsTrigger value="retail">Retail</TabsTrigger>
-                                        <TabsTrigger value="wholesale">Wholesale</TabsTrigger>
-                                    </TabsList>
-                                </Tabs>
-                            </>
-                        )}
+                            {requestTab !== "trip-only" && (
+                                <>
+                                    <Combobox
+                                        open={contractOpen}
+                                        onOpenChange={setContractOpen}
+                                        value={contractValue}
+                                        onValueChange={setContractValue}
+                                        options={contractOptions}
+                                        placeholder="Select Contract"
+                                        searchPlaceholder="Search contract..."
+                                        emptyText="No contract found."
+                                        triggerClassName="w-[270px]"
+                                    />
+
+                                    <Tabs defaultValue="retail">
+                                        <TabsList>
+                                            <TabsTrigger value="retail">Retail</TabsTrigger>
+                                            <TabsTrigger value="wholesale">Wholesale</TabsTrigger>
+                                        </TabsList>
+                                    </Tabs>
+                                </>
+                            )}
+                        </div>
+
                     </div>
-
-                </div>
-                <div className="flex flex-col bg-bg-2 border-border border-b gap-2.5 p-4 bg-bg-2">
-                    <div className="flex flex-row gap-2">
-                        <div className="flex flex-row items-end gap-2">
-                            <ButtonGroup
-                                orientation="vertical"
-                                aria-label="Position controls"
-                                className="h-9 w-9 self-end"
-                            >
-                                <Button variant="outline" size="icon" className="h-1/2 w-full p-0">
-                                    <Icon name="chevronDown" className="size-3 rotate-180" />
-                                </Button>
-                                <Button variant="outline" size="icon" className="h-1/2 w-full p-0">
-                                    <Icon name="chevronDown" className="size-3" />
-                                </Button>
-                            </ButtonGroup>
-                        </div>
-                        <div className="flex flex-col gap-2">
-                            <Label htmlFor="from">From:</Label>
-                            <Popover open={fromOpen} onOpenChange={setFromOpen}>
-                                <PopoverTrigger asChild id="from">
-                                    <Button
-                                        variant="outline"
-                                        role="combobox"
-                                        aria-expanded={fromOpen}
-                                        className={cn(
-                                            "w-[308px] justify-between font-normal",
-                                            fromValue ? "text-foreground" : "text-muted-foreground"
-                                        )}
-                                    >
-                                        {fromValue
-                                            ? airports.find((airport) => airport.value === fromValue)?.label
-                                            : "e.g. KJFK"}
-                                        <Icon name="location" className="text-icon size-4" />
-                                    </Button>
-                                </PopoverTrigger>
-                                <PopoverContent className="w-[308px] p-0">
-                                    <Command>
-                                        <CommandInput placeholder="Search airport..." className="h-9" />
-                                        <CommandList>
-                                            <CommandEmpty>No airport found.</CommandEmpty>
-                                            <CommandGroup>
-                                                {airports.map((airport) => (
-                                                    <CommandItem
-                                                        key={airport.value}
-                                                        value={airport.value}
-                                                        onSelect={(currentValue) => {
-                                                            setFromValue(currentValue === fromValue ? "" : currentValue)
-                                                            setFromOpen(false)
-                                                        }}
-                                                    >
-                                                        {airport.label}
-                                                        <Check
-                                                            className={cn(
-                                                                "ml-auto text-primary",
-                                                                fromValue === airport.value ? "opacity-100" : "opacity-0"
-                                                            )}
-                                                        />
-                                                    </CommandItem>
-                                                ))}
-                                            </CommandGroup>
-                                        </CommandList>
-                                    </Command>
-                                </PopoverContent>
-                            </Popover>
-                        </div>
-                        <div className="flex flex-col gap-2">
-                            <Label htmlFor="to">To:</Label>
-                            <Popover open={toOpen} onOpenChange={setToOpen}>
-                                <PopoverTrigger asChild id="to">
-                                    <Button
-                                        variant="outline"
-                                        role="combobox"
-                                        aria-expanded={toOpen}
-                                        className={cn(
-                                            "w-[308px] justify-between font-normal",
-                                            toValue ? "text-foreground" : "text-muted-foreground"
-                                        )}
-                                    >
-                                        {toValue
-                                            ? airports.find((airport) => airport.value === toValue)?.label
-                                            : "e.g. KLAX"}
-                                        <Icon name="location" className="text-icon size-4" />
-                                    </Button>
-                                </PopoverTrigger>
-                                <PopoverContent className="w-[308px] p-0">
-                                    <Command>
-                                        <CommandInput placeholder="Search airport..." className="h-9" />
-                                        <CommandList>
-                                            <CommandEmpty>No airport found.</CommandEmpty>
-                                            <CommandGroup>
-                                                {airports.map((airport) => (
-                                                    <CommandItem
-                                                        key={airport.value}
-                                                        value={airport.value}
-                                                        onSelect={(currentValue) => {
-                                                            setToValue(currentValue === toValue ? "" : currentValue)
-                                                            setToOpen(false)
-                                                        }}
-                                                    >
-                                                        {airport.label}
-                                                        <Check
-                                                            className={cn(
-                                                                "ml-auto text-primary",
-                                                                toValue === airport.value ? "opacity-100" : "opacity-0"
-                                                            )}
-                                                        />
-                                                    </CommandItem>
-                                                ))}
-                                            </CommandGroup>
-                                        </CommandList>
-                                    </Command>
-                                </PopoverContent>
-                            </Popover>
-                        </div>
-
-                        <div className="flex flex-col gap-2">
-                            <Label htmlFor="depart">Depart / Arrive:</Label>
-
+                    <div className="flex flex-col bg-bg-2 border-border border-b gap-2.5 p-4 bg-bg-2">
+                        {/* Row 1 */}
+                        <div className="flex flex-row justify-between">
                             <div className="flex flex-row gap-2">
-                                <Select defaultValue="depart">
-                                    <SelectTrigger className="w-[115px]" id="depart">
-                                        <SelectValue placeholder="Depart At" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="depart">Depart At</SelectItem>
-                                        <SelectItem value="arrive">Arrive At</SelectItem>
-                                    </SelectContent>
-                                </Select>
-
-                                <Popover open={datePickerOpen} onOpenChange={setDatePickerOpen}>
-                                    <PopoverTrigger asChild>
-                                        <Button
-                                            variant="outline"
-                                            id="date-picker"
-                                            className={cn(
-                                                "w-32 justify-between font-normal",
-                                                date ? "text-foreground" : "text-muted-foreground"
-                                            )}
-                                        >
-                                            {date ? date.toLocaleDateString() : "Select date"}
-                                            <Icon name="chevronDown" className="text-icon size-4" />
+                                <div className="flex flex-row items-end gap-2">
+                                    <ButtonGroup
+                                        orientation="vertical"
+                                        aria-label="Position controls"
+                                        className="h-9 w-9 self-end"
+                                    >
+                                        <Button variant="outline" size="icon" className="h-1/2 w-full p-0">
+                                            <Icon name="chevronDown" className="size-3 rotate-180" />
                                         </Button>
-                                    </PopoverTrigger>
-                                    <PopoverContent className="w-auto overflow-hidden p-0" align="start">
-                                        <Calendar
-                                            mode="single"
-                                            selected={date}
-                                            captionLayout="dropdown"
-                                            onSelect={(date) => {
-                                                setDate(date)
-                                                setDatePickerOpen(false)
-                                            }}
+                                        <Button variant="outline" size="icon" className="h-1/2 w-full p-0">
+                                            <Icon name="chevronDown" className="size-3" />
+                                        </Button>
+                                    </ButtonGroup>
+                                </div>
+                                <div className="flex flex-col gap-2">
+                                    <Label htmlFor="from">From:</Label>
+                                    <Popover open={fromOpen} onOpenChange={setFromOpen}>
+                                        <PopoverTrigger asChild id="from">
+                                            <Button
+                                                variant="outline"
+                                                role="combobox"
+                                                aria-expanded={fromOpen}
+                                                className={cn(
+                                                    "w-[308px] justify-between font-normal",
+                                                    fromValue ? "text-foreground" : "text-muted-foreground"
+                                                )}
+                                            >
+                                                {fromValue
+                                                    ? airports.find((airport) => airport.value === fromValue)?.label
+                                                    : "e.g. KJFK"}
+                                                <Icon name="location" className="text-icon size-4" />
+                                            </Button>
+                                        </PopoverTrigger>
+                                        <PopoverContent className="w-[308px] p-0">
+                                            <Command>
+                                                <CommandInput placeholder="Search airport..." className="h-9" />
+                                                <CommandList>
+                                                    <CommandEmpty>No airport found.</CommandEmpty>
+                                                    <CommandGroup>
+                                                        {airports.map((airport) => (
+                                                            <CommandItem
+                                                                key={airport.value}
+                                                                value={airport.value}
+                                                                onSelect={(currentValue) => {
+                                                                    setFromValue(currentValue === fromValue ? "" : currentValue)
+                                                                    setFromOpen(false)
+                                                                }}
+                                                            >
+                                                                {airport.label}
+                                                                <Check
+                                                                    className={cn(
+                                                                        "ml-auto text-primary",
+                                                                        fromValue === airport.value ? "opacity-100" : "opacity-0"
+                                                                    )}
+                                                                />
+                                                            </CommandItem>
+                                                        ))}
+                                                    </CommandGroup>
+                                                </CommandList>
+                                            </Command>
+                                        </PopoverContent>
+                                    </Popover>
+                                </div>
+                                <div className="flex flex-col gap-2">
+                                    <Label htmlFor="to">To:</Label>
+                                    <Popover open={toOpen} onOpenChange={setToOpen}>
+                                        <PopoverTrigger asChild id="to">
+                                            <Button
+                                                variant="outline"
+                                                role="combobox"
+                                                aria-expanded={toOpen}
+                                                className={cn(
+                                                    "w-[308px] justify-between font-normal",
+                                                    toValue ? "text-foreground" : "text-muted-foreground"
+                                                )}
+                                            >
+                                                {toValue
+                                                    ? airports.find((airport) => airport.value === toValue)?.label
+                                                    : "e.g. KLAX"}
+                                                <Icon name="location" className="text-icon size-4" />
+                                            </Button>
+                                        </PopoverTrigger>
+                                        <PopoverContent className="w-[308px] p-0">
+                                            <Command>
+                                                <CommandInput placeholder="Search airport..." className="h-9" />
+                                                <CommandList>
+                                                    <CommandEmpty>No airport found.</CommandEmpty>
+                                                    <CommandGroup>
+                                                        {airports.map((airport) => (
+                                                            <CommandItem
+                                                                key={airport.value}
+                                                                value={airport.value}
+                                                                onSelect={(currentValue) => {
+                                                                    setToValue(currentValue === toValue ? "" : currentValue)
+                                                                    setToOpen(false)
+                                                                }}
+                                                            >
+                                                                {airport.label}
+                                                                <Check
+                                                                    className={cn(
+                                                                        "ml-auto text-primary",
+                                                                        toValue === airport.value ? "opacity-100" : "opacity-0"
+                                                                    )}
+                                                                />
+                                                            </CommandItem>
+                                                        ))}
+                                                    </CommandGroup>
+                                                </CommandList>
+                                            </Command>
+                                        </PopoverContent>
+                                    </Popover>
+                                </div>
+
+                                <div className="flex flex-col gap-2">
+                                    <Label htmlFor="depart">Depart / Arrive:</Label>
+
+                                    <div className="flex flex-row gap-2">
+                                        <Select defaultValue="depart">
+                                            <SelectTrigger className="w-[115px]" id="depart">
+                                                <SelectValue placeholder="Depart At" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectItem value="depart">Depart At</SelectItem>
+                                                <SelectItem value="arrive">Arrive At</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+
+                                        <Popover open={datePickerOpen} onOpenChange={setDatePickerOpen}>
+                                            <PopoverTrigger asChild>
+                                                <Button
+                                                    variant="outline"
+                                                    id="date-picker"
+                                                    className={cn(
+                                                        "w-32 justify-between font-normal",
+                                                        date ? "text-foreground" : "text-muted-foreground"
+                                                    )}
+                                                >
+                                                    {date ? date.toLocaleDateString() : "Select date"}
+                                                    <Icon name="chevronDown" className="text-icon size-4" />
+                                                </Button>
+                                            </PopoverTrigger>
+                                            <PopoverContent className="w-auto overflow-hidden p-0" align="start">
+                                                <Calendar
+                                                    mode="single"
+                                                    selected={date}
+                                                    captionLayout="dropdown"
+                                                    onSelect={(date) => {
+                                                        setDate(date)
+                                                        setDatePickerOpen(false)
+                                                    }}
+                                                />
+                                            </PopoverContent>
+                                        </Popover>
+
+                                        <Input
+                                            type="time"
+                                            id="time-picker"
+                                            step="1"
+                                            defaultValue="10:30:00"
+                                            className="w-fit bg-background appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none"
                                         />
-                                    </PopoverContent>
-                                </Popover>
 
-                                <Input
-                                    type="time"
-                                    id="time-picker"
-                                    step="1"
-                                    defaultValue="10:30:00"
-                                    className="w-fit bg-background appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none"
-                                />
-
-                                <Tabs defaultValue="pax">
-                                    <TabsList>
-                                        <TabsTrigger value="pax">PAX</TabsTrigger>
-                                        <TabsTrigger value="pos">POS</TabsTrigger>
-                                    </TabsList>
-                                </Tabs>
+                                        <Tabs defaultValue="pax">
+                                            <TabsList>
+                                                <TabsTrigger value="pax">PAX</TabsTrigger>
+                                                <TabsTrigger value="pos">POS</TabsTrigger>
+                                            </TabsList>
+                                        </Tabs>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="flex flex-col gap-1.5">
+                                <div className="flex flex-row items-center text-center h-[18px]">
+                                    <div className="w-[60px] text-[#6C757D]">FLT</div>
+                                    <div className="w-[60px] text-[#6C757D]">BLT</div>
+                                    <div className="w-[60px] text-[#6C757D]">TT</div>
+                                    <div className="w-[60px] text-[#6C757D]">DT</div>
+                                    <div className="w-[60px] text-[#6C757D]">RT</div>
+                                    <div className="w-[100px] text-[#6C757D]">DST</div>
+                                </div>
+                                <div className="flex flex-row items-center h-[32px]">
+                                    <div className="flex flex-row items-center text-center border-x border-border divide-x divide-border h-[14px]">
+                                        <div className="w-[60px] text-foreground leading-[1]">8:36</div>
+                                        <div className="w-[60px] text-foreground leading-[1]">8:48</div>
+                                        <div className="w-[60px] text-foreground leading-[1]">8:48</div>
+                                        <div className="w-[60px] text-foreground leading-[1]">18:36</div>
+                                        <div className="w-[60px] text-foreground leading-[1]">0:00</div>
+                                        <div className="w-[100px] text-foreground leading-[1]">2144 NM</div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
+
+                        {/* Add New Row Button */}
+                        <Button asChild size="default" variant="outline" className="w-fit">
+                            <Link to="#">
+                                <Icon name="add" className="text-foreground size-4" />
+                                Add Next Flight
+                            </Link>
+                        </Button>
                     </div>
-                    <Button asChild size="default" variant="outline" className="w-fit">
-                        <Link to="#">
-                            <Icon name="add" className="text-foreground size-4" />
-                            Add Next Flight
-                        </Link>
-                    </Button>
-                </div>
-                <div className="grid grid-cols-5 bg-bg-2 border-border border-b gap-2 pt-6 pb-8">
-                    <div className="flex flex-col items-center justify-center gap-2">
-                        <span className="text-[#6C757D] text-[13px] font-bold leading-[18px] uppercase">DISTANCE</span>
-                        <span className="font-cal-sans text-[24px] font-normal leading-[18px] tracking-[0.6px]">1380 NM</span>
+
+                    {/* Metrics */}
+                    <div className="grid grid-cols-5 bg-bg-2 border-border border-b gap-2 pt-6 pb-8">
+                        <div className="flex flex-col items-center justify-center gap-2">
+                            <span className="text-[#6C757D] text-[13px] font-bold leading-[18px] uppercase">DISTANCE</span>
+                            <span className="font-cal-sans text-[24px] font-normal leading-[18px] tracking-[0.6px]">1380 NM</span>
+                        </div>
+                        <div className="flex flex-col items-center justify-center gap-2">
+                            <span className="text-[#6C757D] text-[13px] font-bold leading-[18px] uppercase">FLIGHT / BLOCK</span>
+                            <span className="font-cal-sans text-[24px] font-normal leading-[18px] tracking-[0.6px]">4:24 / 4:24</span>
+                        </div>
+                        <div className="flex flex-col items-center justify-center gap-2">
+                            <span className="text-[#6C757D] text-[13px] font-bold leading-[18px] uppercase">TRAVEL TIME</span>
+                            <span className="font-cal-sans text-[24px] font-normal leading-[18px] tracking-[0.6px]">5:06</span>
+                        </div>
+                        <div className="flex flex-col items-center justify-center gap-2">
+                            <span className="text-[#6C757D] text-[13px] font-bold leading-[18px] uppercase">DAYS</span>
+                            <span className="font-cal-sans text-[24px] font-normal leading-[18px] tracking-[0.6px]">2</span>
+                        </div>
+                        <div className="flex flex-col items-center justify-center gap-2">
+                            <span className="text-[#6C757D] text-[13px] font-bold leading-[18px] uppercase">OVERNIGHTS</span>
+                            <span className="font-cal-sans text-[24px] font-normal leading-[18px] tracking-[0.6px]">0</span>
+                        </div>
                     </div>
-                    <div className="flex flex-col items-center justify-center gap-2">
-                        <span className="text-[#6C757D] text-[13px] font-bold leading-[18px] uppercase">FLIGHT / BLOCK</span>
-                        <span className="font-cal-sans text-[24px] font-normal leading-[18px] tracking-[0.6px]">4:24 / 4:24</span>
+                    <div className="flex flex-row p-4 justify-center gap-2 bg-bg-3">
+                        <Button asChild size="default" className="min-w-[90px]">
+                            <Link to="#">Create</Link>
+                        </Button>
+                        <Button asChild size="default" variant="outline" className="min-w-[90px]">
+                            <Link to="#">Reset</Link>
+                        </Button>
                     </div>
-                    <div className="flex flex-col items-center justify-center gap-2">
-                        <span className="text-[#6C757D] text-[13px] font-bold leading-[18px] uppercase">TRAVEL TIME</span>
-                        <span className="font-cal-sans text-[24px] font-normal leading-[18px] tracking-[0.6px]">5:06</span>
-                    </div>
-                    <div className="flex flex-col items-center justify-center gap-2">
-                        <span className="text-[#6C757D] text-[13px] font-bold leading-[18px] uppercase">DAYS</span>
-                        <span className="font-cal-sans text-[24px] font-normal leading-[18px] tracking-[0.6px]">2</span>
-                    </div>
-                    <div className="flex flex-col items-center justify-center gap-2">
-                        <span className="text-[#6C757D] text-[13px] font-bold leading-[18px] uppercase">OVERNIGHTS</span>
-                        <span className="font-cal-sans text-[24px] font-normal leading-[18px] tracking-[0.6px]">0</span>
-                    </div>
-                </div>
-                <div className="flex flex-row p-4 justify-center gap-2 bg-bg-3">
-                    <Button asChild size="default" className="min-w-[90px]">
-                        <Link to="#">Create</Link>
-                    </Button>
-                    <Button asChild size="default" variant="outline" className="min-w-[90px]">
-                        <Link to="#">Reset</Link>
-                    </Button>
                 </div>
             </div>
         </div>
