@@ -1,75 +1,13 @@
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Label } from "@/components/ui/label";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { Calendar } from "@/components/ui/calendar"
-import { Check } from "lucide-react"
-import { useState } from "react"
-import { Input } from "@/components/ui/input"
-import { cn } from "@/lib/utils"
-import {
-    Command,
-    CommandEmpty,
-    CommandGroup,
-    CommandInput,
-    CommandItem,
-    CommandList,
-} from "@/components/ui/command"
+import { useEffect, useMemo, useRef, useState } from "react"
 import { Combobox } from "@/components/ui/combobox"
 import { Icon } from "@/components/ui/icons/Icon"
-import { ButtonGroup } from "@/components/ui/button-group"
 import { PageHeader } from "@/components/PageHeader"
-
-const airports = [
-    {
-        value: "KLAX - LOS ANGELES CALIFORNIA",
-        label: "KLAX - LOS ANGELES CALIFORNIA",
-    },
-    {
-        value: "KJFK - NEW YORK NEW YORK",
-        label: "KJFK - NEW YORK NEW YORK",
-    },
-    {
-        value: "KSFO - SAN FRANCISCO CALIFORNIA",
-        label: "KSFO - SAN FRANCISCO CALIFORNIA",
-    },
-    {
-        value: "KSEA - SEATTLE WASHINGTON",
-        label: "KSEA - SEATTLE WASHINGTON",
-    },
-    {
-        value: "KORD - CHICAGO ILLINOIS",
-        label: "KORD - CHICAGO ILLINOIS",
-    },
-    {
-        value: "KATL - ATLANTA GEORGIA",
-        label: "KATL - ATLANTA GEORGIA",
-    },
-    {
-        value: "KDEN - DENVER COLORADO",
-        label: "KDEN - DENVER COLORADO",
-    },
-    {
-        value: "KMIA - MIAMI FLORIDA",
-        label: "KMIA - MIAMI FLORIDA",
-    },
-    {
-        value: "KDFW - DALLAS FORT WORTH TEXAS",
-        label: "KDFW - DALLAS FORT WORTH TEXAS",
-    },
-    {
-        value: "KBOS - BOSTON MASSACHUSETTS",
-        label: "KBOS - BOSTON MASSACHUSETTS",
-    },
-]
+import { FlightLegRow } from "@/pages/CreateTripQuote/FlightLegRow"
+import type { Leg } from "@/pages/CreateTripQuote/FlightLegRow"
 
 const aircraftGroups = [
     {
@@ -138,28 +76,74 @@ const aircraftGroups = [
     },
 ]
 
+const AVERAGE_SPEED_KTS = 420
+const MIN_DISTANCE_NM = 300
+const DISTANCE_RANGE_NM = 1200
+
+const formatMinutes = (minutes: number) => {
+    const safeMinutes = Math.max(0, Math.round(minutes))
+    const hours = Math.floor(safeMinutes / 60)
+    const mins = safeMinutes % 60
+    return `${hours}:${mins.toString().padStart(2, "0")}`
+}
+
+const hashString = (value: string) => {
+    let hash = 0
+    for (let i = 0; i < value.length; i += 1) {
+        hash = (hash * 31 + value.charCodeAt(i)) % 100000
+    }
+    return hash
+}
+
+const getLegDistance = (leg: Leg) => {
+    if (!leg.fromValue || !leg.toValue) {
+        return 0
+    }
+    const seed = `${leg.fromValue}-${leg.toValue}`
+    return MIN_DISTANCE_NM + (hashString(seed) % DISTANCE_RANGE_NM)
+}
+
+const getLegFlightMinutes = (leg: Leg) => {
+    const distance = getLegDistance(leg)
+    if (!distance) {
+        return 0
+    }
+    return Math.round((distance / AVERAGE_SPEED_KTS) * 60)
+}
+
 export default function CreateTripQuote() {
     const [requestTab, setRequestTab] = useState("quote-trip")
-    const [fromOpen, setFromOpen] = useState(false)
-    const [toOpen, setToOpen] = useState(false)
-    const [datePickerOpen, setDatePickerOpen] = useState(false)
-    const [date, setDate] = useState<Date | undefined>(undefined)
-    const [fromValue, setFromValue] = useState("")
-    const [toValue, setToValue] = useState("")
+    const [legs, setLegs] = useState<Leg[]>([
+        {
+            id: crypto.randomUUID(),
+            fromValue: "",
+            toValue: "",
+            date: undefined,
+            departArriveValue: "depart",
+            timeValue: "18:30:00",
+            tripModeValue: "pax",
+        }
+    ])
+    const [animatedLegIds, setAnimatedLegIds] = useState<string[]>([])
+    const [pendingFocus, setPendingFocus] = useState<{ type: "add" | "remove"; legId: string } | null>(null)
+    const legRefs = useRef<Record<string, {
+        from: HTMLButtonElement | null;
+        to: HTMLButtonElement | null;
+        date: HTMLButtonElement | null;
+        remove: HTMLButtonElement | null;
+    }>>({})
+
     const [aircraftOpen, setAircraftOpen] = useState(false)
     const [accountOpen, setAccountOpen] = useState(false)
     const [contactOpen, setContactOpen] = useState(false)
     const [tripTypeOpen, setTripTypeOpen] = useState(false)
     const [contractOpen, setContractOpen] = useState(false)
+    const [pricingModeValue, setPricingModeValue] = useState("retail")
     const [aircraftValue, setAircraftValue] = useState("")
     const [accountValue, setAccountValue] = useState("")
     const [contactValue, setContactValue] = useState("")
     const [tripTypeValue, setTripTypeValue] = useState("")
     const [contractValue, setContractValue] = useState("")
-    const [departArriveValue, setDepartArriveValue] = useState("depart")
-    const [tripModeValue, setTripModeValue] = useState("pax")
-    const [pricingModeValue, setPricingModeValue] = useState("retail")
-    const [timeValue, setTimeValue] = useState("10:30:00")
 
     const tripTypeOptions = [
         { value: "n/a", label: "N/A" },
@@ -191,13 +175,63 @@ export default function CreateTripQuote() {
     }
     const requestTitle = requestTitles[requestTab] ?? "Create Quote & Trip Request"
 
+    const metrics = useMemo(() => {
+        const legDistances = legs.map(getLegDistance)
+        const legFlightMinutes = legs.map(getLegFlightMinutes)
+        const totalDistance = legDistances.reduce((sum, value) => sum + value, 0)
+        const totalFlightMinutes = legFlightMinutes.reduce((sum, value) => sum + value, 0)
+        const legsWithData = legDistances.filter((distance) => distance > 0).length
+        const blockMinutes = totalFlightMinutes + legsWithData * 10
+
+        return {
+            totalDistance,
+            totalFlightMinutes,
+            blockMinutes,
+        }
+    }, [legs])
+
+    const registerLegRef = (id: string, key: "from" | "to" | "date" | "remove") => (node: HTMLButtonElement | null) => {
+        if (!legRefs.current[id]) {
+            legRefs.current[id] = { from: null, to: null, date: null, remove: null }
+        }
+        legRefs.current[id][key] = node
+    }
+
+    useEffect(() => {
+        if (!pendingFocus) {
+            return
+        }
+
+        const refs = legRefs.current[pendingFocus.legId]
+        const leg = legs.find((item) => item.id === pendingFocus.legId)
+        if (!refs || !leg) {
+            setPendingFocus(null)
+            return
+        }
+
+        let target: HTMLButtonElement | null = null
+        if (pendingFocus.type === "add") {
+            if (!leg.fromValue) {
+                target = refs.from
+            } else if (!leg.toValue) {
+                target = refs.to
+            } else if (!leg.date) {
+                target = refs.date
+            } else {
+                target = refs.from ?? refs.to ?? refs.date
+            }
+        } else {
+            target = refs.remove ?? refs.from ?? refs.to ?? refs.date
+        }
+
+        if (target) {
+            target.focus()
+        }
+
+        setPendingFocus(null)
+    }, [legs, pendingFocus])
+
     const handleReset = () => {
-        setFromOpen(false)
-        setToOpen(false)
-        setDatePickerOpen(false)
-        setDate(undefined)
-        setFromValue("")
-        setToValue("")
         setAircraftOpen(false)
         setAccountOpen(false)
         setContactOpen(false)
@@ -208,10 +242,68 @@ export default function CreateTripQuote() {
         setContactValue("")
         setTripTypeValue("")
         setContractValue("")
-        setDepartArriveValue("depart")
-        setTripModeValue("pax")
         setPricingModeValue("retail")
-        setTimeValue("10:30:00")
+        setLegs([
+            {
+                id: crypto.randomUUID(),
+                fromValue: "",
+                toValue: "",
+                date: undefined,
+                departArriveValue: "depart",
+                timeValue: "18:30:00",
+                tripModeValue: "pax",
+            }
+        ])
+        setAnimatedLegIds([])
+        setPendingFocus(null)
+    }
+
+    const addLeg = () => {
+        const lastLeg = legs[legs.length - 1];
+        const newLegId = crypto.randomUUID()
+        setLegs([
+            ...legs,
+            {
+                id: newLegId,
+                fromValue: lastLeg.toValue,
+                toValue: "",
+                date: lastLeg.date,
+                departArriveValue: "depart",
+                timeValue: "18:30:00",
+                tripModeValue: "pax",
+            }
+        ])
+        setAnimatedLegIds((prev) => [...prev, newLegId])
+        setPendingFocus({ type: "add", legId: newLegId })
+        window.setTimeout(() => {
+            setAnimatedLegIds((prev) => prev.filter((id) => id !== newLegId))
+        }, 350)
+    }
+
+    const removeLeg = (id: string, index: number) => {
+        if (legs.length > 1) {
+            const remaining = legs.filter(leg => leg.id !== id)
+            const fallbackId = remaining[remaining.length - 1]?.id
+            const targetId = index > 1 ? legs[index - 1]?.id ?? fallbackId : fallbackId
+            if (targetId) {
+                setPendingFocus({ type: "remove", legId: targetId })
+            }
+            setLegs(remaining)
+        }
+    }
+
+    const updateLeg = (id: string, updates: Partial<Leg>) => {
+        setLegs(legs.map(leg => leg.id === id ? { ...leg, ...updates } : leg))
+    }
+
+    const moveLeg = (index: number, direction: "up" | "down") => {
+        const nextIndex = direction === "up" ? index - 1 : index + 1
+        if (nextIndex < 0 || nextIndex >= legs.length) {
+            return
+        }
+        const next = [...legs]
+            ;[next[index], next[nextIndex]] = [next[nextIndex], next[index]]
+        setLegs(next)
     }
 
     return (
@@ -230,7 +322,6 @@ export default function CreateTripQuote() {
             <div className="px-4 pb-4">
                 <div className="flex flex-col border-border border rounded-lg overflow-hidden">
                     <div className="flex flex-row border-border border-b p-4 gap-2 bg-bg-3 justify-between">
-
                         <div className="flex flex-row gap-2">
                             <Combobox
                                 open={aircraftOpen}
@@ -243,7 +334,6 @@ export default function CreateTripQuote() {
                                 emptyText="No aircraft found."
                                 triggerClassName="w-[348px]"
                             />
-
                             <Combobox
                                 open={accountOpen}
                                 onOpenChange={setAccountOpen}
@@ -255,7 +345,6 @@ export default function CreateTripQuote() {
                                 emptyText="No account found."
                                 triggerClassName="w-[164px]"
                             />
-
                             <Combobox
                                 open={contactOpen}
                                 onOpenChange={setContactOpen}
@@ -268,9 +357,7 @@ export default function CreateTripQuote() {
                                 triggerClassName="w-[164px]"
                             />
                         </div>
-
                         <div className="flex flex-row gap-2">
-
                             {requestTab !== "quote-only" && (
                                 <Combobox
                                     open={tripTypeOpen}
@@ -284,7 +371,6 @@ export default function CreateTripQuote() {
                                     triggerClassName="w-[170px]"
                                 />
                             )}
-
                             {requestTab !== "trip-only" && (
                                 <>
                                     <Combobox
@@ -298,7 +384,6 @@ export default function CreateTripQuote() {
                                         emptyText="No contract found."
                                         triggerClassName="w-[270px]"
                                     />
-
                                     <Tabs value={pricingModeValue} onValueChange={setPricingModeValue}>
                                         <TabsList>
                                             <TabsTrigger value="retail">Retail</TabsTrigger>
@@ -308,233 +393,70 @@ export default function CreateTripQuote() {
                                 </>
                             )}
                         </div>
-
                     </div>
-                    <div className="flex flex-col bg-bg-2 border-border border-b gap-2.5 p-4 bg-bg-2">
-                        {/* Row 1 */}
-                        <div className="flex flex-row justify-between">
+
+                    <div className="flex flex-col bg-bg-2 border-border border-b p-4">
+                        {/* Headers */}
+                        <div className="grid grid-cols-[1fr_400px] items-end pb-2">
                             <div className="flex flex-row gap-2">
-                                <div className="flex flex-row items-end gap-2">
-                                    <ButtonGroup
-                                        orientation="vertical"
-                                        aria-label="Position controls"
-                                        className="h-9 w-9 self-end"
-                                    >
-                                        <Button variant="outline" size="icon" className="h-1/2 w-full p-0">
-                                            <Icon name="chevronDown" className="size-3 rotate-180" />
-                                        </Button>
-                                        <Button variant="outline" size="icon" className="h-1/2 w-full p-0">
-                                            <Icon name="chevronDown" className="size-3" />
-                                        </Button>
-                                    </ButtonGroup>
-                                </div>
-                                <div className="flex flex-col gap-2">
-                                    <Label htmlFor="from">From:</Label>
-                                    <Popover open={fromOpen} onOpenChange={setFromOpen}>
-                                        <PopoverTrigger asChild id="from">
-                                            <Button
-                                                variant="outline"
-                                                role="combobox"
-                                                aria-expanded={fromOpen}
-                                                className={cn(
-                                                    "w-[308px] justify-between font-normal",
-                                                    fromValue ? "text-foreground" : "text-muted-foreground"
-                                                )}
-                                            >
-                                                {fromValue
-                                                    ? airports.find((airport) => airport.value === fromValue)?.label
-                                                    : "e.g. KJFK"}
-                                                <Icon name="location" className="text-icon size-4" />
-                                            </Button>
-                                        </PopoverTrigger>
-                                        <PopoverContent className="w-[308px] p-0">
-                                            <Command>
-                                                <CommandInput placeholder="Search airport..." className="h-9" />
-                                                <CommandList>
-                                                    <CommandEmpty>No airport found.</CommandEmpty>
-                                                    <CommandGroup>
-                                                        {airports.map((airport) => (
-                                                            <CommandItem
-                                                                key={airport.value}
-                                                                value={airport.value}
-                                                                onSelect={(currentValue) => {
-                                                                    setFromValue(currentValue === fromValue ? "" : currentValue)
-                                                                    setFromOpen(false)
-                                                                }}
-                                                            >
-                                                                {airport.label}
-                                                                <Check
-                                                                    className={cn(
-                                                                        "ml-auto text-primary",
-                                                                        fromValue === airport.value ? "opacity-100" : "opacity-0"
-                                                                    )}
-                                                                />
-                                                            </CommandItem>
-                                                        ))}
-                                                    </CommandGroup>
-                                                </CommandList>
-                                            </Command>
-                                        </PopoverContent>
-                                    </Popover>
-                                </div>
-                                <div className="flex flex-col gap-2">
-                                    <Label htmlFor="to">To:</Label>
-                                    <Popover open={toOpen} onOpenChange={setToOpen}>
-                                        <PopoverTrigger asChild id="to">
-                                            <Button
-                                                variant="outline"
-                                                role="combobox"
-                                                aria-expanded={toOpen}
-                                                className={cn(
-                                                    "w-[308px] justify-between font-normal",
-                                                    toValue ? "text-foreground" : "text-muted-foreground"
-                                                )}
-                                            >
-                                                {toValue
-                                                    ? airports.find((airport) => airport.value === toValue)?.label
-                                                    : "e.g. KLAX"}
-                                                <Icon name="location" className="text-icon size-4" />
-                                            </Button>
-                                        </PopoverTrigger>
-                                        <PopoverContent className="w-[308px] p-0">
-                                            <Command>
-                                                <CommandInput placeholder="Search airport..." className="h-9" />
-                                                <CommandList>
-                                                    <CommandEmpty>No airport found.</CommandEmpty>
-                                                    <CommandGroup>
-                                                        {airports.map((airport) => (
-                                                            <CommandItem
-                                                                key={airport.value}
-                                                                value={airport.value}
-                                                                onSelect={(currentValue) => {
-                                                                    setToValue(currentValue === toValue ? "" : currentValue)
-                                                                    setToOpen(false)
-                                                                }}
-                                                            >
-                                                                {airport.label}
-                                                                <Check
-                                                                    className={cn(
-                                                                        "ml-auto text-primary",
-                                                                        toValue === airport.value ? "opacity-100" : "opacity-0"
-                                                                    )}
-                                                                />
-                                                            </CommandItem>
-                                                        ))}
-                                                    </CommandGroup>
-                                                </CommandList>
-                                            </Command>
-                                        </PopoverContent>
-                                    </Popover>
-                                </div>
-
-                                <div className="flex flex-col gap-2">
-                                    <Label htmlFor="depart">Depart / Arrive:</Label>
-
-                                    <div className="flex flex-row gap-2">
-                                        <Select value={departArriveValue} onValueChange={setDepartArriveValue}>
-                                            <SelectTrigger className="w-[115px]" id="depart">
-                                                <SelectValue placeholder="Depart At" />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                <SelectItem value="depart">Depart At</SelectItem>
-                                                <SelectItem value="arrive">Arrive At</SelectItem>
-                                            </SelectContent>
-                                        </Select>
-
-                                        <Popover open={datePickerOpen} onOpenChange={setDatePickerOpen}>
-                                            <PopoverTrigger asChild>
-                                                <Button
-                                                    variant="outline"
-                                                    id="date-picker"
-                                                    className={cn(
-                                                        "w-32 justify-between font-normal",
-                                                        date ? "text-foreground" : "text-muted-foreground"
-                                                    )}
-                                                >
-                                                    {date ? date.toLocaleDateString() : "Select date"}
-                                                    <Icon name="chevronDown" className="text-icon size-4" />
-                                                </Button>
-                                            </PopoverTrigger>
-                                            <PopoverContent className="w-auto overflow-hidden p-0" align="start">
-                                                <Calendar
-                                                    mode="single"
-                                                    selected={date}
-                                                    captionLayout="dropdown"
-                                                    onSelect={(date) => {
-                                                        setDate(date)
-                                                        setDatePickerOpen(false)
-                                                    }}
-                                                />
-                                            </PopoverContent>
-                                        </Popover>
-
-                                        <Input
-                                            type="time"
-                                            id="time-picker"
-                                            step="1"
-                                            value={timeValue}
-                                            onChange={(event) => setTimeValue(event.target.value)}
-                                            className="w-fit bg-background appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none"
-                                        />
-
-                                        <Tabs value={tripModeValue} onValueChange={setTripModeValue}>
-                                            <TabsList>
-                                                <TabsTrigger value="pax">PAX</TabsTrigger>
-                                                <TabsTrigger value="pos">POS</TabsTrigger>
-                                            </TabsList>
-                                        </Tabs>
-                                    </div>
-                                </div>
+                                <div className="w-9" />
+                                <div className="w-[308px]"><Label>From:</Label></div>
+                                <div className="w-[308px]"><Label>To:</Label></div>
+                                <div className="w-fit"><Label>Depart / Arrive:</Label></div>
                             </div>
-                            <div className="flex flex-col gap-1.5">
-                                {/* 
-                                    Aviation Shortcuts Mapping:
-                                    FLT: Flight Time (varianthours)
-                                    BLT: Block Time (legBlock)
-                                    TT:  Total Time (blockTotal)
-                                    DT:  Duty Time (dutyTotal)
-                                    RT:  Rest Time (restTotal)
-                                    DST: Distance (distanceTotal)
-                                */}
-                                <div className="flex flex-row items-center text-center h-[18px]">
-                                    <div className="w-[60px] text-[#6C757D]" title="Flight Time">FLT</div>
-                                    <div className="w-[60px] text-[#6C757D]" title="Block Time">BLT</div>
-                                    <div className="w-[60px] text-[#6C757D]" title="Total Time">TT</div>
-                                    <div className="w-[60px] text-[#6C757D]" title="Duty Time">DT</div>
-                                    <div className="w-[60px] text-[#6C757D]" title="Rest Time">RT</div>
-                                    <div className="w-[100px] text-[#6C757D]" title="Distance">DST</div>
-                                </div>
-                                <div className="flex flex-row items-center h-[32px]">
-                                    <div className="flex flex-row items-center text-center border-x border-border divide-x divide-border h-[14px]">
-                                        <div className="w-[60px] text-foreground leading-[1]">8:36</div>
-                                        <div className="w-[60px] text-foreground leading-[1]">8:48</div>
-                                        <div className="w-[60px] text-foreground leading-[1]">8:48</div>
-                                        <div className="w-[60px] text-foreground leading-[1]">18:36</div>
-                                        <div className="w-[60px] text-foreground leading-[1]">0:00</div>
-                                        <div className="w-[100px] text-foreground leading-[1]">2144 NM</div>
-                                    </div>
-                                </div>
+                            <div className="flex flex-row items-center text-center h-[18px] text-[14px] w-[400px]">
+                                <div className="w-[60px] text-[#6C757D]" title="Flight Time">FLT</div>
+                                <div className="w-[60px] text-[#6C757D]" title="Block Time">BLT</div>
+                                <div className="w-[60px] text-[#6C757D]" title="Total Time">TT</div>
+                                <div className="w-[60px] text-[#6C757D]" title="Duty Time">DT</div>
+                                <div className="w-[60px] text-[#6C757D]" title="Rest Time">RT</div>
+                                <div className="w-[100px] text-[#6C757D]" title="Distance">DST</div>
                             </div>
                         </div>
 
-                        {/* Add New Row Button */}
-                        <Button asChild size="default" variant="outline" className="w-fit">
-                            <Link to="#">
+                        {/* Legs */}
+                        <div className="flex flex-col">
+                            {legs.map((leg, index) => (
+                                <FlightLegRow
+                                    key={leg.id}
+                                    leg={leg}
+                                    index={index}
+                                    canMoveUp={index > 0}
+                                    canMoveDown={index < legs.length - 1}
+                                    isNew={animatedLegIds.includes(leg.id)}
+                                    onUpdate={(updates) => updateLeg(leg.id, updates)}
+                                    onRemove={() => removeLeg(leg.id, index)}
+                                    onMoveUp={() => moveLeg(index, "up")}
+                                    onMoveDown={() => moveLeg(index, "down")}
+                                    fromRef={registerLegRef(leg.id, "from")}
+                                    toRef={registerLegRef(leg.id, "to")}
+                                    dateRef={registerLegRef(leg.id, "date")}
+                                    removeRef={registerLegRef(leg.id, "remove")}
+                                />
+                            ))}
+                        </div>
+
+                        <div className="pt-4">
+                            <Button size="default" variant="outline" className="w-fit" onClick={addLeg}>
                                 <Icon name="add" className="text-foreground size-4" />
                                 Add Next Flight
-                            </Link>
-                        </Button>
+                            </Button>
+                        </div>
                     </div>
 
                     {/* Metrics */}
                     <div className="grid grid-cols-5 bg-bg-2 border-border border-b gap-2 pt-6 pb-8">
                         <div className="flex flex-col items-center justify-center gap-2">
                             <span className="text-[#6C757D] text-[13px] font-bold leading-[18px] uppercase">DISTANCE</span>
-                            <span className="font-cal-sans text-[24px] font-normal leading-[18px] tracking-[0.6px]">1380 NM</span>
+                            <span className="font-cal-sans text-[24px] font-normal leading-[18px] tracking-[0.6px]">
+                                {Math.round(metrics.totalDistance)} NM
+                            </span>
                         </div>
                         <div className="flex flex-col items-center justify-center gap-2">
                             <span className="text-[#6C757D] text-[13px] font-bold leading-[18px] uppercase">FLIGHT / BLOCK</span>
-                            <span className="font-cal-sans text-[24px] font-normal leading-[18px] tracking-[0.6px]">4:24 / 4:24</span>
+                            <span className="font-cal-sans text-[24px] font-normal leading-[18px] tracking-[0.6px]">
+                                {formatMinutes(metrics.totalFlightMinutes)} / {formatMinutes(metrics.blockMinutes)}
+                            </span>
                         </div>
                         <div className="flex flex-col items-center justify-center gap-2">
                             <span className="text-[#6C757D] text-[13px] font-bold leading-[18px] uppercase">TRAVEL TIME</span>
