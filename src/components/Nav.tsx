@@ -2,6 +2,8 @@ import { Button } from "@/components/ui/button"
 import { useTheme } from "@/components/theme-provider"
 import { Link, NavLink, useMatch } from "react-router-dom"
 import avianisLogo from "@/assets/avianis.svg"
+import avianisLightLogo from "@/assets/avianis_light.svg"
+import { useEffect, useState } from "react"
 import { cn } from "@/lib/utils"
 import { Icon } from "@/components/ui/icons/Icon"
 import {
@@ -84,12 +86,42 @@ function NavMenuItemLink({
 
 export function Nav() {
   const { setTheme, theme } = useTheme()
+  const [systemTheme, setSystemTheme] = useState<"dark" | "light">(() => {
+    if (typeof window === "undefined") {
+      return "dark"
+    }
+    return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"
+  })
+
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return undefined
+    }
+
+    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)")
+    const updateSystemTheme = () => {
+      setSystemTheme(mediaQuery.matches ? "dark" : "light")
+    }
+
+    updateSystemTheme()
+    if (mediaQuery.addEventListener) {
+      mediaQuery.addEventListener("change", updateSystemTheme)
+      return () => mediaQuery.removeEventListener("change", updateSystemTheme)
+    }
+
+    mediaQuery.addListener(updateSystemTheme)
+    return () => mediaQuery.removeListener(updateSystemTheme)
+  }, [])
+
+  const resolvedTheme = theme === "system" ? systemTheme : theme
+  const logoSrc = resolvedTheme === "light" ? avianisLightLogo : avianisLogo
+
   return (
     <header className="border-b flex items-center gap-2 px-4 h-12 w-full h-[48px] bg-bg-2 justify-between">
 
       <div className="flex flex-row gap-2 items-center">
         <NavLink to="/">
-          <img src={avianisLogo} alt="Avianis" className="h-6" />
+          <img src={logoSrc} alt="Avianis" className="h-6" />
         </NavLink>
 
         <NavigationMenu viewport={false} className="ml-2 w-full max-w-none justify-start">

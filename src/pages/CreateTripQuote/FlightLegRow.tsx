@@ -304,7 +304,7 @@ export const FlightLegRow = ({
 
             <div className="flex flex-col gap-1.5 pt-1 w-[400px]">
                 <div className="flex flex-row items-center h-[32px]">
-                    <div className="flex flex-row items-center text-center border-x border-border divide-x divide-border h-[14px]">
+                    <div className="flex flex-row items-center text-center border-x border-border divide-x divide-border h-[14px] text-[14px]">
                         <div className="w-[60px] text-foreground leading-[1]">8:36</div>
                         <div className="w-[60px] text-foreground leading-[1]">8:48</div>
                         <div className="w-[60px] text-foreground leading-[1]">8:48</div>
