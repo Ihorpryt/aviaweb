@@ -1,4 +1,4 @@
-import { useState, type Ref } from "react"
+import { useState, useMemo, type Ref } from "react"
 import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -10,6 +10,25 @@ import { cn } from "@/lib/utils"
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command"
 import { Icon } from "@/components/ui/icons/Icon"
 import { ButtonGroup } from "@/components/ui/button-group"
+
+const AVERAGE_SPEED_KTS = 420
+const MIN_DISTANCE_NM = 300
+const DISTANCE_RANGE_NM = 1200
+
+const formatMinutes = (minutes: number) => {
+    const safeMinutes = Math.max(0, Math.round(minutes))
+    const hours = Math.floor(safeMinutes / 60)
+    const mins = safeMinutes % 60
+    return `${hours}:${mins.toString().padStart(2, "0")}`
+}
+
+const hashString = (value: string) => {
+    let hash = 0
+    for (let i = 0; i < value.length; i += 1) {
+        hash = (hash * 31 + value.charCodeAt(i)) % 100000
+    }
+    return hash
+}
 
 const airports = [
     {
@@ -98,6 +117,34 @@ export const FlightLegRow = ({
     const [fromOpen, setFromOpen] = useState(false)
     const [toOpen, setToOpen] = useState(false)
     const [datePickerOpen, setDatePickerOpen] = useState(false)
+
+    const legMetrics = useMemo(() => {
+        const hasRouteData = leg.fromValue && leg.toValue
+        if (!hasRouteData) {
+            return {
+                flightTime: "0:00",
+                blockTime: "0:00",
+                totalTime: "0:00",
+                dutyTime: "0:00",
+                restTime: "0:00",
+                distance: "0 NM",
+            }
+        }
+
+        const seed = `${leg.fromValue}-${leg.toValue}`
+        const distance = MIN_DISTANCE_NM + (hashString(seed) % DISTANCE_RANGE_NM)
+        const flightMinutes = Math.round((distance / AVERAGE_SPEED_KTS) * 60)
+        const blockMinutes = flightMinutes + 10
+
+        return {
+            flightTime: formatMinutes(flightMinutes),
+            blockTime: formatMinutes(blockMinutes),
+            totalTime: formatMinutes(blockMinutes),
+            dutyTime: formatMinutes(blockMinutes + 60),
+            restTime: formatMinutes(0),
+            distance: `${distance} NM`,
+        }
+    }, [leg.fromValue, leg.toValue])
 
     return (
         <div
@@ -305,12 +352,12 @@ export const FlightLegRow = ({
             <div className="flex flex-col gap-1.5 pt-1 w-[400px]">
                 <div className="flex flex-row items-center h-[32px]">
                     <div className="flex flex-row items-center text-center border-x border-border divide-x divide-border h-[14px] text-[14px]">
-                        <div className="w-[60px] text-foreground leading-[1]">8:36</div>
-                        <div className="w-[60px] text-foreground leading-[1]">8:48</div>
-                        <div className="w-[60px] text-foreground leading-[1]">8:48</div>
-                        <div className="w-[60px] text-foreground leading-[1]">18:36</div>
-                        <div className="w-[60px] text-foreground leading-[1]">0:00</div>
-                        <div className="w-[100px] text-foreground leading-[1]">2144 NM</div>
+                        <div className="w-[60px] text-foreground leading-[1]">{legMetrics.flightTime}</div>
+                        <div className="w-[60px] text-foreground leading-[1]">{legMetrics.blockTime}</div>
+                        <div className="w-[60px] text-foreground leading-[1]">{legMetrics.totalTime}</div>
+                        <div className="w-[60px] text-foreground leading-[1]">{legMetrics.dutyTime}</div>
+                        <div className="w-[60px] text-foreground leading-[1]">{legMetrics.restTime}</div>
+                        <div className="w-[100px] text-foreground leading-[1]">{legMetrics.distance}</div>
                     </div>
                 </div>
             </div>

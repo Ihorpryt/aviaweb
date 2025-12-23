@@ -182,11 +182,17 @@ export default function CreateTripQuote() {
         const totalFlightMinutes = legFlightMinutes.reduce((sum, value) => sum + value, 0)
         const legsWithData = legDistances.filter((distance) => distance > 0).length
         const blockMinutes = totalFlightMinutes + legsWithData * 10
+        // Travel time = block time + 30 min ground handling per leg
+        const travelMinutes = blockMinutes + legsWithData * 30
+        // Days = based on total travel time (assume ~8 hours per travel day)
+        const days = legsWithData > 0 ? Math.max(1, Math.ceil(travelMinutes / 480)) : 0
 
         return {
             totalDistance,
             totalFlightMinutes,
             blockMinutes,
+            travelMinutes,
+            days,
         }
     }, [legs])
 
@@ -444,7 +450,7 @@ export default function CreateTripQuote() {
                         </div>
                     </div>
 
-                    {/* Metrics */}
+                    {/* Global Metrics */}
                     <div className="grid grid-cols-5 bg-bg-2 border-border border-b gap-2 pt-6 pb-8">
                         <div className="flex flex-col items-center justify-center gap-2">
                             <span className="text-[#6C757D] text-[13px] font-bold leading-[18px] uppercase">DISTANCE</span>
@@ -460,11 +466,11 @@ export default function CreateTripQuote() {
                         </div>
                         <div className="flex flex-col items-center justify-center gap-2">
                             <span className="text-[#6C757D] text-[13px] font-bold leading-[18px] uppercase">TRAVEL TIME</span>
-                            <span className="font-cal-sans text-[24px] font-normal leading-[18px] tracking-[0.6px]">5:06</span>
+                            <span className="font-cal-sans text-[24px] font-normal leading-[18px] tracking-[0.6px]">{formatMinutes(metrics.travelMinutes)}</span>
                         </div>
                         <div className="flex flex-col items-center justify-center gap-2">
                             <span className="text-[#6C757D] text-[13px] font-bold leading-[18px] uppercase">DAYS</span>
-                            <span className="font-cal-sans text-[24px] font-normal leading-[18px] tracking-[0.6px]">2</span>
+                            <span className="font-cal-sans text-[24px] font-normal leading-[18px] tracking-[0.6px]">{metrics.days}</span>
                         </div>
                         <div className="flex flex-col items-center justify-center gap-2">
                             <span className="text-[#6C757D] text-[13px] font-bold leading-[18px] uppercase">OVERNIGHTS</span>
