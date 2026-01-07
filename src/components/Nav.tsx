@@ -70,7 +70,7 @@ function NavMenuItemLink({
         className={cn(
           navigationMenuTriggerStyle(),
           "gap-1.5",
-          "data-[active=true]:bg-white/10 hover:bg-white/10 flex flex-row h-[30px] tracking-[-0.14px] text-white"
+          "data-[active=true]:bg-white/10 data-[active=true]:text-white hover:bg-white/10 flex flex-row h-[30px] tracking-[-0.14px] text-white dark:text-white"
         )}
       >
         <NavLink to={to} end>
@@ -103,7 +103,7 @@ export function Nav() {
       </div>
 
       <div className="flex flex-row gap-2 items-center">
-        <Button asChild size="sm" variant="outline" className="w-fit">
+        <Button asChild size="sm" variant="outlineGlass" className="w-fit">
           <Link to="#">
             <Icon name="checkmark" className="text-[#22C45D] size-4" />
             Check-In
@@ -112,9 +112,9 @@ export function Nav() {
 
         <Tooltip>
           <TooltipTrigger asChild>
-            <Button asChild size="icon-sm" variant="ghost">
+            <Button asChild size="icon-sm" variant="ghostGlass">
               <Link to="#">
-                <Icon name="recent" className="text-icon size-5" />
+                <Icon name="recent" className="text-white size-5" />
               </Link>
             </Button>
           </TooltipTrigger>
@@ -125,9 +125,9 @@ export function Nav() {
 
         <Tooltip>
           <TooltipTrigger asChild>
-            <Button asChild size="icon-sm" variant="ghost">
+            <Button asChild size="icon-sm" variant="ghostGlass">
               <Link to="#">
-                <Icon name="help" className="text-icon size-5" />
+                <Icon name="help" className="text-white size-5" />
               </Link>
             </Button>
           </TooltipTrigger>
@@ -138,9 +138,9 @@ export function Nav() {
 
         <Tooltip>
           <TooltipTrigger asChild>
-            <Button asChild size="icon-sm" variant="ghost">
+            <Button asChild size="icon-sm" variant="ghostGlass">
               <Link to="#">
-                <Icon name="maximize" className="text-icon size-5" />
+                <Icon name="maximize" className="text-white size-5" />
               </Link>
             </Button>
           </TooltipTrigger>
@@ -153,11 +153,11 @@ export function Nav() {
           <TooltipTrigger asChild>
             <Button
               size="icon-sm"
-              variant="ghost"
+              variant="ghostGlass"
               onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
               className="cursor-pointer"
             >
-              <Icon name="darkMode" className="text-icon size-5" />
+              <Icon name="darkMode" className="text-white size-5" />
             </Button>
           </TooltipTrigger>
           <TooltipContent side="bottom" sideOffset={0}>
