@@ -24,8 +24,8 @@ export function PageHeader({ icon, title, animateKey, className, children }: Pag
     return (
         <div className={cn("flex flex-row items-center justify-between min-h-[36px] h p-4", className)}>
             <div className="flex flex-row items-center gap-2">
-                {icon && <Icon name={icon} className="text-icon size-6" />}
-                <h3 className="font-cal-sans text-xl h-[36px] leading-[36px]">
+                {icon && <Icon name={icon} className="text-white size-6" />}
+                <h3 className="font-cal-sans text-xl h-[36px] leading-[36px] text-white">
                     <span
                         key={animateKey}
                         className={cn(

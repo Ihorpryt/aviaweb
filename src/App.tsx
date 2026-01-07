@@ -3,15 +3,16 @@ import { Nav } from "./components/Nav"
 import CreateTripQuote from "./pages/CreateTripQuote"
 import { PlaceholderPage } from "./pages/PlaceholderPage"
 import Operations from "./pages/Operations"
-
+import Gradient from "./components/ui/gradient"
 
 function App() {
   const location = useLocation()
 
   return (
     <div className="flex min-h-svh flex-col items-center justify-center overflow-hidden">
+      <Gradient />
       <Nav />
-      <main className="flex flex-1 w-full">
+      <main className="flex flex-1 w-full z-[2]">
         <div key={location.pathname} className="flex flex-col flex-1 min-h-0 w-full">
           <Routes location={location}>
             <Route path="/" element={<Navigate to="/schedule" replace />} />

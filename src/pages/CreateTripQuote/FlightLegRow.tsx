@@ -322,7 +322,7 @@ export const FlightLegRow = ({
                         step="1"
                         value={leg.timeValue}
                         onChange={(event) => onUpdate({ timeValue: event.target.value })}
-                        className="w-[110px] bg-background appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none"
+                        className="w-[110px] appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none"
                     />
 
                     <Tabs value={leg.tripModeValue} onValueChange={(val) => onUpdate({ tripModeValue: val })}>

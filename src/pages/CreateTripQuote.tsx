@@ -313,10 +313,10 @@ export default function CreateTripQuote() {
     }
 
     return (
-        <div className="flex flex-col bg-background w-full">
+        <div className="flex flex-col w-full">
 
             <PageHeader icon="sales" title={requestTitle} animateKey={requestTab}>
-                <Tabs value={requestTab} onValueChange={setRequestTab}>
+                <Tabs value={requestTab} onValueChange={setRequestTab} variant="glass">
                     <TabsList>
                         <TabsTrigger value="quote-only">Quote Only</TabsTrigger>
                         <TabsTrigger value="trip-only">Trip Only</TabsTrigger>
@@ -327,7 +327,7 @@ export default function CreateTripQuote() {
 
             <div className="px-4 pb-4">
                 <div className="flex flex-col border-border border rounded-lg overflow-hidden">
-                    <div className="flex flex-row border-border border-b p-4 gap-2 bg-bg-3 justify-between">
+                    <div className="flex flex-row border-border border-b p-4 gap-2 bg-bg-glass justify-between">
                         <div className="flex flex-row gap-2">
                             <Combobox
                                 open={aircraftOpen}
