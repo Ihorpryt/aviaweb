@@ -204,7 +204,7 @@ function FlightLegSearch() {
                             </Button>
                         </div>
                     </div>
-                    <div className="flex-1 overflow-auto">
+                    <div className="flex-1 overflow-auto bg-bg-4">
                         <Table>
                             <TableHeader className="bg-bg-3">
                                 <TableRow>
