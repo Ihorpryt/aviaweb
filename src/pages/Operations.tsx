@@ -139,7 +139,7 @@ const legStatusStyles: Record<string, string> = {
 
 function PlaceholderSection({ title }: { title: string }) {
     return (
-        <div className="flex flex-1 items-center justify-center text-sm text-muted-foreground">
+        <div className="flex flex-1 items-center justify-center text-sm text-muted-foreground bg-background">
             {title} content goes here.
         </div>
     )
@@ -168,7 +168,7 @@ function FlightLegSearch() {
                     </div>
                 </aside>
                 <div className="flex flex-1 min-h-0 flex-col">
-                    <div className="flex flex-row items-center justify-between gap-4 border-b border-border bg-background px-4 py-2">
+                    <div className="flex flex-row items-center justify-between gap-4 border-b border-border bg-bg-glass px-4 py-2">
                         <div className="flex items-center gap-2">
                             <Tooltip>
                                 <TooltipTrigger asChild>
@@ -253,7 +253,7 @@ function FlightLegSearch() {
 export default function Operations() {
     return (
         <div className="flex flex-1 min-h-0 flex-col w-full">
-            <PageHeader icon="operations" title="Operations" />
+            <PageHeader icon="operations" title="Operations" className="pb-1.5" />
             <div className="flex flex-row gap-6 border-b border-border/80 px-4">
                 {operationTabs.map((tab) => (
                     <NavLink
@@ -261,8 +261,8 @@ export default function Operations() {
                         to={tab.to}
                         className={({ isActive }) =>
                             cn(
-                                "pb-3 text-sm font-medium text-muted-foreground border-b-2 border-transparent",
-                                isActive && "text-foreground border-primary"
+                                "pb-3 text-sm font-medium text-white/75 border-b-2 border-transparent",
+                                isActive && "text-white border-primary"
                             )
                         }
                     >
