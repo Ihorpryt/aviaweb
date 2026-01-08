@@ -73,7 +73,7 @@ function NavMenuItemLink({
           "data-[active=true]:bg-white/10 data-[active=true]:text-white hover:bg-white/10 flex flex-row h-[30px] tracking-[-0.14px] text-white dark:text-white"
         )}
       >
-        <NavLink to={to} end>
+        <NavLink to={to} end className="text-white">
           <Icon name={icon} className="text-white size-4.5" />
           {label}
         </NavLink>

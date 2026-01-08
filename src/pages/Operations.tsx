@@ -221,7 +221,7 @@ function FlightLegSearch() {
                             <TableBody>
                                 {flightLegs.map((leg, index) => (
                                     <TableRow key={`${leg.route}-${index}`}>
-                                        <TableCell className="text-sky-400">{leg.route}</TableCell>
+                                        <TableCell className="dark:text-sky-400 text-primary">{leg.route}</TableCell>
                                         <TableCell>{leg.aircraft}</TableCell>
                                         <TableCell>{leg.tripStage}</TableCell>
                                         <TableCell>
@@ -261,8 +261,8 @@ export default function Operations() {
                         to={tab.to}
                         className={({ isActive }) =>
                             cn(
-                                "pb-3 text-sm font-medium text-white/75 border-b-2 border-transparent",
-                                isActive && "text-white border-primary"
+                                "pb-3 text-sm font-medium text-white/55 border-b-2 border-transparent",
+                                isActive && "text-white border-white"
                             )
                         }
                     >

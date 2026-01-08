@@ -5,7 +5,7 @@ export function PlaceholderPage({ title, icon }: { title: string, icon?: IconNam
   return (
     <div className="flex flex-col gap-4 w-full">
       <PageHeader icon={icon} title={title} />
-      <div className="p-6">{title} content goes here...</div>
+      <div className="p-6 text-foreground bg-background">{title} content goes here...</div>
     </div>
   )
 }
