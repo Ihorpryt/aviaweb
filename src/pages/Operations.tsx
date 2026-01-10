@@ -168,7 +168,7 @@ function FlightLegSearch() {
                     </div>
                 </aside>
                 <div className="flex flex-1 min-h-0 flex-col">
-                    <div className="flex flex-row items-center justify-between gap-4 border-b border-border bg-bg-glass px-4 py-2">
+                    <div className="flex flex-row items-center justify-between gap-4 border-b border-border bg-bg-4 px-4 py-2">
                         <div className="flex items-center gap-2">
                             <Tooltip>
                                 <TooltipTrigger asChild>
@@ -253,16 +253,16 @@ function FlightLegSearch() {
 export default function Operations() {
     return (
         <div className="flex flex-1 min-h-0 flex-col w-full">
-            <PageHeader icon="operations" title="Operations" className="pb-1.5" />
-            <div className="flex flex-row gap-6 border-b border-border/80 px-4">
+            {/* <PageHeader icon="operations" title="Operations" className="pb-1.5" /> */}
+            <div className="flex flex-row gap-6 border-b border-border/80 px-4 pt-2 bg-bg-glass">
                 {operationTabs.map((tab) => (
                     <NavLink
                         key={tab.to}
                         to={tab.to}
                         className={({ isActive }) =>
                             cn(
-                                "pb-3 text-sm font-medium text-white/55 border-b-2 border-transparent",
-                                isActive && "text-white border-white"
+                                "pb-1.5 text-[13px] font-medium hover:text-foreground text-foreground/55 border-b-2 border-transparent",
+                                isActive && "text-foreground border-primary"
                             )
                         }
                     >
