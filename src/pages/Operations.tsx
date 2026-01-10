@@ -1,4 +1,3 @@
-import { PageHeader } from "@/components/PageHeader"
 import { Button } from "@/components/ui/button"
 import { Icon } from "@/components/ui/icons/Icon"
 import { Input } from "@/components/ui/input"
@@ -253,7 +252,6 @@ function FlightLegSearch() {
 export default function Operations() {
     return (
         <div className="flex flex-1 min-h-0 flex-col w-full">
-            {/* <PageHeader icon="operations" title="Operations" className="pb-1.5" /> */}
             <div className="flex flex-row gap-6 border-b border-border/80 px-4 pt-2 bg-bg-glass">
                 {operationTabs.map((tab) => (
                     <NavLink
