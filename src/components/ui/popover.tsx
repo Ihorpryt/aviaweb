@@ -10,9 +10,19 @@ function Popover({
 }
 
 function PopoverTrigger({
+  className,
   ...props
 }: React.ComponentProps<typeof PopoverPrimitive.Trigger>) {
-  return <PopoverPrimitive.Trigger data-slot="popover-trigger" {...props} />
+  return (
+    <PopoverPrimitive.Trigger
+      data-slot="popover-trigger"
+      className={cn(
+        "relative before:pointer-events-none before:absolute before:inset-0 before:rounded-[calc(0.5rem-1px)] before:shadow-[0_-1px_0_rgba(255,255,255,0.25)]",
+        className
+      )}
+      {...props}
+    />
+  )
 }
 
 function PopoverContent({

@@ -153,7 +153,7 @@ function FlightLegSearch() {
                 <aside
                     className={cn(
                         "hidden lg:flex flex-col border-r border-border bg-bg-3 transition-all duration-300 ease-in-out overflow-hidden",
-                        showFilters ? "w-56 opacity-100" : "w-0 opacity-0 border-r-0"
+                        showFilters ? "w-56" : "w-0"
                     )}
                 >
                     <div className="w-56 flex flex-col gap-4 px-4 py-4 text-sm text-muted-foreground">
@@ -193,7 +193,7 @@ function FlightLegSearch() {
                             <div className="relative w-60">
                                 <Icon
                                     name="search"
-                                    className="text-icon size-4 absolute left-2.5 top-1/2 -translate-y-1/2"
+                                    className="text-icon size-4 absolute left-2.5 top-1/2 -translate-y-1/2 z-10"
                                 />
                                 <Input className="h-7 pl-8 rounded-lg pb-[6px]" placeholder="Search" />
                             </div>

@@ -43,7 +43,7 @@ export function Combobox({
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className={cn(triggerClassName, "justify-between font-normal")}
+          className={cn(triggerClassName, "relative justify-between font-normal before:pointer-events-none before:absolute before:inset-0 before:rounded-[calc(0.5rem-1px)] before:shadow-[0_-1px_0_rgba(255,255,255,0.25)]")}
         >
           <span className={cn(!selectedLabel && "text-muted-foreground", "truncate")}>
             {selectedLabel ?? placeholder}
