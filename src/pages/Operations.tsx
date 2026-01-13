@@ -220,7 +220,7 @@ function FlightLegSearch() {
                             <TableBody>
                                 {flightLegs.map((leg, index) => (
                                     <TableRow key={`${leg.route}-${index}`}>
-                                        <TableCell className="dark:text-sky-400 text-primary">{leg.route}</TableCell>
+                                        <TableCell className="dark:text-sky-400 text-[#1869CD]">{leg.route}</TableCell>
                                         <TableCell>{leg.aircraft}</TableCell>
                                         <TableCell>{leg.tripStage}</TableCell>
                                         <TableCell>
