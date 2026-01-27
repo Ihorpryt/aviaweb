@@ -8,6 +8,8 @@ import { Icon } from "@/components/ui/icons/Icon"
 import { PageHeader } from "@/components/PageHeader"
 import { FlightLegRow } from "@/pages/CreateTripQuote/FlightLegRow"
 import type { Leg } from "@/pages/CreateTripQuote/FlightLegRow"
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
+
 
 const aircraftGroups = [
     {
@@ -139,6 +141,7 @@ export default function CreateTripQuote() {
     const [tripTypeOpen, setTripTypeOpen] = useState(false)
     const [contractOpen, setContractOpen] = useState(false)
     const [pricingModeValue, setPricingModeValue] = useState("retail")
+    const [timezoneValue, setTimezoneValue] = useState("local")
     const [aircraftValue, setAircraftValue] = useState("")
     const [accountValue, setAccountValue] = useState("")
     const [contactValue, setContactValue] = useState("")
@@ -406,9 +409,24 @@ export default function CreateTripQuote() {
                         <div className="grid grid-cols-[1fr_400px] items-end pb-2">
                             <div className="flex flex-row gap-2">
                                 <div className="w-9" />
-                                <div className="w-[308px]"><Label>From:</Label></div>
+                                <div className="w-[308px] relative">
+                                    <Label>From:</Label>
+                                    <ToggleGroup type="single" variant="outline" size="xsmall" className="absolute right-0 top-[-3px]">
+                                        <ToggleGroupItem value="home">Home</ToggleGroupItem>
+                                        <ToggleGroupItem value="transient">Transient</ToggleGroupItem>
+                                    </ToggleGroup>
+                                </div>
+
                                 <div className="w-[308px]"><Label>To:</Label></div>
-                                <div className="w-fit"><Label>Depart / Arrive:</Label></div>
+                                <div className="w-fit relative">
+                                    <Label>Depart / Arrive:</Label>
+                                    <Tabs value={timezoneValue} onValueChange={setTimezoneValue} size="xsmall">
+                                        <TabsList className="absolute left-[287px] top-[-3px]">
+                                            <TabsTrigger value="local">Local</TabsTrigger>
+                                            <TabsTrigger value="zulu">Zulu</TabsTrigger>
+                                        </TabsList>
+                                    </Tabs>
+                                </div>
                             </div>
                             <div className="flex flex-row items-center text-center h-[18px] text-[14px] w-[400px]">
                                 <div className="w-[60px] text-[#6C757D]" title="Flight Time">FLT</div>
